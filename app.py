@@ -1,8 +1,11 @@
 from flask import Flask, escape, request, render_template
+from os import environ
 import json
 import os
+import requests
 
 
+API_KEY = environ.get('API_KEY')
 app = Flask(__name__)
 
 
@@ -34,7 +37,13 @@ def favoritess():
 def search():
     """if POST, query movie api for data and return results."""
     query = request.form['title']
-    return f'Hello, {query}!'
+    print(query)
+    api = "http://www.omdbapi.com/?apikey="+API_KEY+"&s="+query
+    print(api)
+    response = requests.get(api)
+    response_json = response.json()
+    print(response_json)
+    return f'Hello, {response_json}!'
 
 
 @app.route('/movie/<movie_oid>')
@@ -45,4 +54,6 @@ def movie_detail():
     return f'Hello, {escape(name)}!'
 
 
-app.run(debug=True,port=8085)
+print(API_KEY)
+
+app.run(debug=True, port=8085)
